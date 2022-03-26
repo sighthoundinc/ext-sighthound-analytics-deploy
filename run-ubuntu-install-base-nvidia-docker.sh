@@ -28,14 +28,10 @@ echo \
 
 sudo apt-get update
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io
-set +e
 sudo groupadd docker
 sudo usermod -aG docker $USER
-newgrp docker
-set -e
-
 echo "Installing additional docker dependencies"
-sudo apt install qemu-user-static docker-compose
+sudo apt install -y qemu-user-static docker-compose
 
 if [ ${use_gpu} == true ]; then
     echo "Installing nvidia-docker"
@@ -67,3 +63,4 @@ EOF
     docker run --rm nvidia/cuda:11.0-base nvidia-smi   sudo systemctl restart docker
 fi
 echo "Installation complete, please install sighthound analytics service"
+newgrp docker
