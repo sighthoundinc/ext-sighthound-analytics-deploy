@@ -46,7 +46,7 @@ To setup a base install with nvidia-docker and components required for Sighthoun
 ```
 to complete the installation of sighthound analytics.
 
-## Port Forward Into Instance
+### Port Forward Into Instance
 
 You can forward ports from your GCP instance to localhost, then access the Analytics Webapp at http://localhost:8081.  Use a command like one one below:
 ```
