@@ -46,6 +46,15 @@ To setup a base install with nvidia-docker and components required for Sighthoun
 ```
 to complete the installation of sighthound analytics.
 
+## Port Forward Into Instance
+
+You can forward ports from your GCP instance to localhost, then access the Analytics Webapp at http://localhost:8081.  Use a command like one one below:
+```
+project=myproject
+instance=myinstance
+gcloud --project ${project} compute ssh --ssh-flag="-L 4000:localhost:4000 -L 8081:localhost:81 -L 15674:localhost:15674 -L 8085:localhost:8085"  ${instance}
+```
+
 ## Custom Hardware
 
 You may also deploy your own instance using a custom hardware platform.
@@ -93,8 +102,12 @@ These instructions are only necessary when using an NVIDIA GPU.
 
 You can test that the docker runtime is functioning correctly with `docker run --rm nvidia/cuda:11.0-base nvidia-smi`
 
-### Installing Sighthound Analytics
+### Installing Sighthound Analtyics
 
 1. Add your key package to the directory containing the [run-sighthoundanalytics-install.sh](run-sighthoundanalytics-install.sh) script.
 2. Run `./run-sighthoundanalytics-install.sh`
+
+### Upgrading Sighthound Analtyics
+
+Repeat the installation steps above.
 
