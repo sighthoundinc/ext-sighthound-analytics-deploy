@@ -4,7 +4,9 @@ This repository contains scripts to automate setup steps for Ubuntu deployed Sig
 It assumes execution on a WSL or Linux-like command line interface with support for bash scripts.  This includes
 WSL Ubuntu on recent Windows releases.
 
-# Google Cloud Platform deployment
+# Deployments
+
+## Google Cloud Platform deployment
 
 This section describes deployment on Google Cloud Platform (GCP).  These instructions allow you to create
 your own instance of the Sighthound Analytics deployment and potentially customize.
@@ -43,3 +45,69 @@ To setup a base install with nvidia-docker and components required for Sighthoun
 ./run-sighthoundanalytics-install.sh
 ```
 to complete the installation of sighthound analytics.
+
+## Port Forward Into Instance
+
+You can forward ports from your GCP instance to localhost, then access the Analytics Webapp at http://localhost:8081.  Use a command like one one below:
+```
+project=myproject
+instance=myinstance
+gcloud --project ${project} compute ssh --ssh-flag="-L 4000:localhost:4000 -L 8081:localhost:81 -L 15674:localhost:15674 -L 8085:localhost:8085"  ${instance}
+```
+
+## Custom Hardware
+
+You may also deploy your own instance using a custom hardware platform.
+
+### Requirements
+* [Ubuntu 20.04](https://releases.ubuntu.com/20.04/) installation.
+* Your machine should contain:
+  * A recent (<5 years old) Intel or AMD CPU
+    * At least 8 GB RAM (roughly 4GB per video stream)
+  * Optionally (for best performance), An Nvidia GPU from the 1000, 2000, or 3000 series with:
+    * CUDA >= 11.3
+    * TensorRT 8.0 and CUDNN 8.2 available via NVIDIA runtime
+
+### Set Up Docker 
+Follow the instructions here: [Install Docker Engine on Ubuntu](https://docs.docker.com/engine/install/ubuntu/)
+
+Additionally, install docker compose:
+```
+sudo apt install qemu-user-static docker-compose
+```
+
+### Set Up Python
+```
+sudo apt-get update && sudo apt-get -y install python3 python3-pip
+```
+### Set Up Cuda/Nvidia Runtime
+
+These instructions are only necessary when using an NVIDIA GPU.
+
+1. Follow instructions here: [CUDA Toolkit 11.6 Update 1 Downloads](https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&Distribution=Ubuntu&target_version=20.04&target_type=deb_network)
+2. Next, install the cuda container toolkit here: [Welcome — NVIDIA Cloud Native Technologies  documentation](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#setting-up-nvidia-container-toolkit)
+3.  Configure the default runtime by editing `/etc/docker/daemon.json` and adding "default-runtime": "nvidia", e.g.
+```
+{
+    "default-runtime": "nvidia",
+    "runtimes": {
+        "nvidia": {
+            "path": "nvidia-container-runtime",
+            "runtimeArgs": []
+        }
+    }
+}
+```
+4. Reboot your machine after installing all of these packages.
+
+You can test that the docker runtime is functioning correctly with `docker run --rm nvidia/cuda:11.0-base nvidia-smi`
+
+### Installing Sighthound Analtyics
+
+1. Add your key package to the directory containing the [run-sighthoundanalytics-install.sh](run-sighthoundanalytics-install.sh) script.
+2. Run `./run-sighthoundanalytics-install.sh`
+
+### Upgrading Sighthound Analtyics
+
+Repeat the installation steps above.
+
