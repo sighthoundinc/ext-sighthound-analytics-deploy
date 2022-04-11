@@ -6,4 +6,4 @@ compute_instance_name=
 compute_instance_zone=us-central1-a
 # Set to true to use GPU
 use_gpu=false
-install_wheel=shepherd-3.0.0rc5-py3-none-any.whl
+install_wheel=shepherd-3.0.1-py3-none-any.whl
