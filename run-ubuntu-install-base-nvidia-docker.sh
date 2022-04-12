@@ -28,7 +28,10 @@ echo \
 
 sudo apt-get update
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+set +e
+echo "Adding docker group, may already exist from google create script"
 sudo groupadd docker
+set -e
 sudo usermod -aG docker $USER
 echo "Installing additional docker dependencies"
 sudo apt install -y qemu-user-static docker-compose
@@ -59,8 +62,10 @@ if [ ${use_gpu} == true ]; then
 EOF
     sudo patch -d /etc/docker -p1 < ${patchfile}
     rm ${patchfile}
-    echo "Testing GPU access without specifying NVIDIA runtime"
-    docker run --rm nvidia/cuda:11.0-base nvidia-smi   sudo systemctl restart docker
+    echo "Testing GPU access without specifying NVIDIA runtime.  This step completed successfully when you see a GPU detected in the output below"
+    newgrp docker << EOF
+sudo systemctl restart docker
+docker run --rm nvidia/cuda:11.0-base nvidia-smi
+EOF
 fi
 echo "Installation complete, please install sighthound analytics service"
-newgrp docker
