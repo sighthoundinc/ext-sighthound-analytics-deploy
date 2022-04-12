@@ -15,11 +15,10 @@ your own instance of the Sighthound Analytics deployment and potentially customi
 to hold the new instance.  You may also use an existing project, however you'll need to ensure your account
 has Compute Instance Admin permissions for the project.
 
-2. [setup gcloud CLI](https://cloud.google.com/sdk/gcloud) for your account.
+2. [Setup gcloud CLI](https://cloud.google.com/sdk/gcloud) for your account and host system.
 
-
-3. Customize the `project_name` and `compute_instance_name` variables in the `environment.sh` script:
-  * `project_name` should match the project you created in step 1.
+3. Customize the `project_id` and `compute_instance_name` variables in the `environment.sh` script:
+  * `project_id` should match the project ID (not name) you created in step 1.
   * `compute_instance_name` should be the name of the instance you'd like to create.  This can be anything
 you choose, subject to GCP [naming requirements](https://cloud.google.com/compute/docs/naming-resources).
   * `use_gpu` can be set to `true` to use a GPU deployment.  Refer to Google Cloud [GPU Pricing Detail](https://cloud.google.com/compute/gpus-pricing) for details about cost.
@@ -48,11 +47,11 @@ to complete the installation of sighthound analytics.
 
 ### Port Forward Into Instance
 
-You can forward ports from your GCP instance to localhost, then access the Analytics Webapp at http://localhost:8081.  Use a command like one one below:
+You can forward ports from your GCP instance to localhost, then access the Analytics Webapp at http://localhost:8081.  Use a command like one below, where
+the `environment.sh` contains variables setup in step 1
 ```
-project=myproject
-instance=myinstance
-gcloud --project ${project} compute ssh --ssh-flag="-L 4000:localhost:4000 -L 8081:localhost:81 -L 15674:localhost:15674 -L 8085:localhost:8085"  ${instance}
+source environment.sh
+gcloud --project ${project_id} compute ssh --ssh-flag="-L 4000:localhost:4000 -L 8081:localhost:81 -L 15674:localhost:15674 -L 8085:localhost:8085"  ${compute_instance_name}
 ```
 
 ## Custom Hardware
@@ -68,7 +67,7 @@ You may also deploy your own instance using a custom hardware platform.
     * CUDA >= 11.3
     * TensorRT 8.0 and CUDNN 8.2 available via NVIDIA runtime
 
-### Set Up Docker 
+### Set Up Docker
 Follow the instructions here: [Install Docker Engine on Ubuntu](https://docs.docker.com/engine/install/ubuntu/)
 
 Additionally, install docker compose:
